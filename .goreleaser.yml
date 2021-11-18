@@ -1,0 +1,85 @@
+release:
+  prerelease: auto
+
+before:
+  hooks:
+    - go mod download
+
+builds:
+  - id: linux
+    main: ./main
+    binary: goreleaser-test
+    flags:
+      - -tags
+      - netgo release
+      - -trimpath
+    env:
+      - CGO_ENABLED=1
+    ldflags:
+      - -s
+      - -w
+      - -X github.com/oslokommune/goreleaser-test/pkg/version.ShortCommit={{.ShortCommit}}
+      - -X github.com/oslokommune/goreleaser-test/pkg/version.Version={{.Version}}
+      - -X github.com/oslokommune/goreleaser-test/pkg/version.BuildDate={{.Date}}
+    goos:
+      - linux
+    goarch:
+      - amd64
+  - id: darwin
+    main: ./main
+    binary: goreleaser-test
+    flags:
+      - -tags
+      - netgo release
+      - -trimpath
+    env:
+      - CGO_ENABLED=1
+      - CC=o64-clang
+      - CXX=o64-clang++
+    ldflags:
+      - -s
+      - -w
+      - -X github.com/oslokommune/goreleaser-test/pkg/version.ShortCommit={{.ShortCommit}}
+      - -X github.com/oslokommune/goreleaser-test/pkg/version.Version={{.Version}}
+      - -X github.com/oslokommune/goreleaser-test/pkg/version.BuildDate={{.Date}}
+    goos:
+      - darwin
+    goarch:
+      - amd64
+
+archives:
+  - replacements:
+      darwin: Darwin
+      linux: Linux
+    id: default
+    builds:
+      - linux
+      - darwin
+    name_template: "okctl_{{ .Os }}_{{ .Arch }}"
+    format: tar.gz
+    files:
+      - none*
+
+checksum:
+  name_template: 'goreleaser-test_checksums.txt'
+
+#brews:
+#  -
+#    tap:
+#      owner: oslokommune
+#      name: homebrew-tap
+#
+#    commit_author:
+#      name: okctl
+#      email: okctl@oslo.kommune.no
+#
+#    folder: Formula
+#
+#    homepage: "https://github.com/oslokommune/okctl"
+#
+#    description: "Opinionated and effortless infrastructure and application management"
+#
+#    skip_upload: false
+#
+#    custom_block: |
+#      head "https://github.com/oslokommune/goreleaser-test/releases/download/latest_release/goreleaser-test_Darwin_amd64.tar.gz"

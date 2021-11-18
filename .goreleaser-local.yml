@@ -1,0 +1,66 @@
+before:
+  hooks:
+    - go mod download
+
+builds:
+  - id: linux
+    main: ./goreleaser-test
+    binary: goreleaser-test
+    flags:
+      - -tags
+      - netgo release
+      - -trimpath
+    env:
+      - CGO_ENABLED=1
+    ldflags:
+      - -s
+      - -w
+      - -X github.com/oslokommune/goreleaser-test/pkg/version.ShortCommit={{.ShortCommit}}
+      - -X github.com/oslokommune/goreleaser-test/pkg/version.Version={{.Version}}
+      - -X github.com/oslokommune/goreleaser-test/pkg/version.BuildDate={{.Date}}
+    goos:
+      - linux
+    goarch:
+      - amd64
+  - id: darwin
+    main: ./goreleaser-test
+    binary: goreleaser-test
+    flags:
+      - -tags
+      - netgo release
+      - -trimpath
+    env:
+      - CGO_ENABLED=1
+      - CC=o64-clang
+      - CXX=o64-clang++
+    ldflags:
+      - -s
+      - -w
+      - -X github.com/oslokommune/goreleaser-test/pkg/version.ShortCommit={{.ShortCommit}}
+      - -X github.com/oslokommune/goreleaser-test/pkg/version.Version={{.Version}}
+      - -X github.com/oslokommune/goreleaser-test/pkg/version.BuildDate={{.Date}}
+    goos:
+      - darwin
+    goarch:
+      - amd64
+
+archives:
+- replacements:
+    darwin: Darwin
+    linux: Linux
+  builds:
+    - linux
+    - darwin
+
+checksum:
+  name_template: 'goreleaser-test_checksums.txt'
+
+snapshot:
+  name_template: "{{ .Tag }}"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+    - '^docs:'
+    - '^test:'
