@@ -98,3 +98,4 @@ fabric.properties
 # Build dir
 build/
 
+dist/

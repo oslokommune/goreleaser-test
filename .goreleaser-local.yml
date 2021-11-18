@@ -4,7 +4,7 @@ before:
 
 builds:
   - id: linux
-    main: ./goreleaser-test
+    main: .
     binary: goreleaser-test
     flags:
       - -tags
@@ -23,7 +23,7 @@ builds:
     goarch:
       - amd64
   - id: darwin
-    main: ./goreleaser-test
+    main: .
     binary: goreleaser-test
     flags:
       - -tags
